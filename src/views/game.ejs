@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Buzzer Game ΓÇô <%= username %>
+	</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+	<style>
+		body {
+			background-color: #0e0e0e;
+			color: #f1f1f1;
+			font-family: 'Orbitron', sans-serif;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			min-height: 100vh;
+			margin: 0;
+			text-align: center;
+		}
+
+		h1 {
+			font-size: 3rem;
+			margin-bottom: 0.2em;
+		}
+
+		#status {
+			font-size: 1.5rem;
+			color: #00ffcc;
+			margin: 0.5em 0 1em;
+		}
+
+		#playerList {
+			margin-bottom: 2em;
+			font-size: 1.2rem;
+			color: #ccc;
+		}
+
+		#startBtn {
+			background-color: #333;
+			color: #0ff;
+			border: 2px solid #0ff;
+			font-size: 1.2rem;
+			padding: 0.7rem 1.5rem;
+			border-radius: 10px;
+			cursor: pointer;
+			transition: all 0.2s ease-in-out;
+		}
+
+		#startBtn:hover {
+			background-color: #0ff;
+			color: #000;
+		}
+
+		#buzzerContainer {
+			margin-top: 2rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		#tapBtn {
+			width: 200px;
+			height: 200px;
+			border-radius: 50%;
+			background: radial-gradient(circle at 30% 30%, #ff4d4d, #b30000);
+			border: none;
+			box-shadow: 0 0 40px #ff1a1a, inset 0 0 15px #660000;
+			color: white;
+			font-size: 2rem;
+			font-weight: bold;
+			cursor: pointer;
+			transition: transform 0.1s ease, box-shadow 0.1s ease;
+		}
+
+		#tapBtn:active {
+			transform: scale(0.95);
+			box-shadow: 0 0 10px #ff1a1a, inset 0 0 5px #330000;
+		}
+
+		#tapBtn:disabled {
+			background: radial-gradient(circle at 30% 30%, #8b0000, #4d0000);
+			box-shadow: none;
+			color: #aaa;
+			cursor: not-allowed;
+		}
+	</style>
+
+</head>
+
+<body>
+	<h1>Hi, <%= username %>!</h1>
+	<div id="status">Connecting...</div>
+	<div id="playerList">Players: waiting...</div>
+	<div>
+		<button id="startBtn">Start Game</button>
+	</div>
+
+	<div id="buzzerContainer">
+		<button id="tapBtn" disabled>≡ƒÜ¿ TAP</button>
+	</div>
+
+
+
+	<script>
+		const username = "<%= username %>";
+		const ws = new WebSocket(`ws://${location.host}/?username=${username}`);
+		const status = document.getElementById('status');
+		const playerList = document.getElementById('playerList');
+		const tapBtn = document.getElementById('tapBtn');
+		const startBtn = document.getElementById('startBtn');
+
+		ws.onmessage = (event) => {
+			const data = JSON.parse(event.data);
+
+			switch (data.type) {
+				case 'gameState':
+					status.innerText = `Game state: ${data.state}`;
+					break;
+				case 'players':
+					playerList.innerText = `Players: ${data.players.join(', ')}`;
+					break;
+				case 'gameStart':
+					status.innerText = `Get ready... ${data.countdown}`;
+					startBtn.disabled = true;
+					break;
+				case 'countdown':
+					status.innerText = `Starting in... ${data.count}`;
+					break;
+				case 'gameActive':
+					status.innerText = '≡ƒÜ¿ GO! TAP NOW!';
+					tapBtn.disabled = false;
+					break;
+				case 'winner':
+					status.innerText = `≡ƒÄë ${data.winner} won the game!`;
+					tapBtn.disabled = true;
+					startBtn.disabled = false;
+					break;
+				case 'gameReset':
+					status.innerText = 'Game reset.';
+					tapBtn.disabled = true;
+					startBtn.disabled = false;
+					break;
+			}
+		};
+
+		tapBtn.onclick = () => {
+			ws.send(JSON.stringify({type: 'tap', username: username, timestamp: Date.now()}));
+		};
+
+		startBtn.onclick = () => {
+			ws.send(JSON.stringify({type: 'startGame'}));
+		};
+	</script>
+</body>
+
+</html>
+
