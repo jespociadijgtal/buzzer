@@ -1,5 +1,10 @@
-import express, { Request, Response } from 'express';
-import { WebSocketServer, WebSocket, RawData } from 'ws';
+import expressPkg from 'express';
+const express = expressPkg;
+type Request = expressPkg.Request;
+type Response = expressPkg.Response;
+
+import { WebSocketServer, WebSocket } from 'ws';
+import type { RawData } from 'ws'
 import http, { IncomingMessage } from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -23,6 +28,11 @@ let countdownTimer: NodeJS.Timeout | null = null;
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, '../public')));
+
+// Home route to enter username
+app.get('/', (req: Request, res: Response) => {
+	res.render('form');
+});
 
 // Web route
 app.get('/:username', (req: Request, res: Response) => {
