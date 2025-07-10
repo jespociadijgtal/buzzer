@@ -10,9 +10,19 @@
 	<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="/game.css">
 </head>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Quiz Buzzer – <%= username %>
+	</title>
+	<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="/game.css">
+</head>
 
 <body>
-
 	<!-- Jeopardy Board (Desktop only) -->
 	<div class="jeopardy-board desktop-only">
 		<!-- Column Headers -->
@@ -23,24 +33,19 @@
 			<div class="jeopardy-header">Tears & Feels</div>
 			<div class="jeopardy-header">Space & Sci-Fry</div>
 		</div>
-
 		<!-- Game Grid -->
 		<% for(let row=1; row <=5; row++) { %>
 			<div class="jeopardy-row">
 				<% for(let col=1; col <=5; col++) { %>
 					<div class="jeopardy-cell" data-id="r<%= row %>c<%= col %>">
-						<%= row * 100 %> <!-- CHANGE THIS LINE -->
+						<%= row * 100 %>
 					</div>
 					<% } %>
 			</div>
 			<% } %>
-
-				<!-- Reset Button -->
 				<div class="jeopardy-reset">
 					<button onclick="resetBoard()">Reset Board</button>
 				</div>
-
-				<!-- Image Modal -->
 				<div id="imageModal">
 					<button onclick="closeModal()">Close</button>
 					<img id="modalImage" src="" alt="Revealed Image">
@@ -50,160 +55,41 @@
 	<!-- Game UI (mobile only) -->
 	<div class="game-container mobile-only">
 		<div class="header-card">
-			<div class="username-display">🎮 <%= username %>
+			<div class="username-display">😑 <%= username %>
 			</div>
 			<div id="connectionStatus" class="connection-status reconnecting">
 				<span>🔌</span>
 				<span>Connecting to the fun center...</span>
 			</div>
 		</div>
-
 		<div class="status-card">
 			<div id="status" class="game-status">Preparing for battle...</div>
 			<div id="playerList" class="player-list">Loading players...</div>
 		</div>
-
-
 		<div class="buzzer-card">
 			<div class="buzzer-container">
 				<% if (username==='Master' ) { %>
 					<button id="startBtn" class="start-btn">
-						<span>🚀 Start the Show</span>
+						<span>🎉 Start the Show</span>
 					</button>
 					<% } %>
 						<button id="tapBtn" class="buzz-button" disabled>
-
-							<span>🔔 BUZZ</span>
+							<span>🚨 BUZZ</span>
 						</button>
 			</div>
 		</div>
-
 		<div class="actions-card">
 			<div class="action-buttons">
-				<button class="action-btn" onclick="changeUsername()">📝 Change Name</button>
+				<button class="action-btn" onclick="changeUsername()">🔀 Change Name</button>
 				<button class="action-btn" onclick="refreshConnection()">🔄 Refresh</button>
 			</div>
 		</div>
-
 		<div class="fun-footer">
-			<p>⚡ Quick on the buzz = bragging rights for life! ⚡</p>
+			<p>✨ Quick on the buzz = bragging rights for life! ✨</p>
 		</div>
 	</div>
 
 	<script>
-		const JEOPARDY_KEY = 'revealedJeopardyCells';
-		const revealedCells = JSON.parse(localStorage.getItem(JEOPARDY_KEY)) || {};
-		const columnImages = {
-			BoomAction: [
-				'mission-impossible.webp',
-				'kill-bill.jpg',
-				'die_hard.jpg',
-				'tokyo_drift.jpg',
-				'speed.jpg'
-			],
-			LaughAttack: [
-				'private-benjamin.webp',
-				'home-alone.webp',
-				'shaun-of-the-dead.webp',
-				'zohan.webp',
-				'thousand-words.webp'
-			],
-			CreepyWeird: [
-				'the-healing.webp',
-				'evil-dead.webp',
-				'midsommar.webp',
-				'midnight-mass.webp',
-				'cure-to-wellness.webp'
-			],
-			TearsFeels: [
-				'up.webp',
-				'miracle-in-cell-7.webp',
-				'bridge-to-terabithia.webp',
-				'all-the-bright-places.webp',
-				'wolf-children.webp',
-			],
-			SciFry: [
-				'ET.webp',
-				'alien.webp',
-				'planet-of-the-apes.webp',
-				'interstellar.webp',
-				'alita.webp',
-			]
-		};
-
-		// Flatten into imagePaths row-major order (5 rows x 5 columns)
-		const categories = Object.keys(columnImages); // Preserves order
-		const imagePaths = [];
-
-		for (let row = 0; row < 5; row++) {
-			for (let col = 0; col < 5; col++) {
-				imagePaths.push(columnImages[categories[col]][row]);
-			}
-		}
-
-
-
-
-		const cellImages = {};
-		imagePaths.forEach((filename, index) => {
-			const row = Math.floor(index / 5) + 1;
-			const col = (index % 5) + 1;
-			const cellId = `r${row}c${col}`;
-			cellImages[cellId] = filename;
-		});
-
-		function revealImage(cell, id) {
-			const img = document.createElement('img');
-			img.src = cellImages[id];
-			img.classList.add('jeopardy-img');
-			cell.innerHTML = '';
-			cell.appendChild(img);
-			cell.classList.add('revealed');
-			revealedCells[id] = true;
-			localStorage.setItem(JEOPARDY_KEY, JSON.stringify(revealedCells));
-		}
-
-		function showModal(id) {
-			const modal = document.getElementById('imageModal');
-			const modalImage = document.getElementById('modalImage');
-			modalImage.src = cellImages[id];
-			modal.style.display = 'flex';
-		}
-
-		function closeModal() {
-			const modal = document.getElementById('imageModal');
-			modal.style.display = 'none';
-		}
-
-		function resetBoard() {
-			localStorage.removeItem(JEOPARDY_KEY); // clears 'revealedJeopardyCells'
-			localStorage.removeItem(STORAGE_KEY);  // clears 'quiz_buzzer_username'
-
-			document.querySelectorAll('.jeopardy-cell').forEach(cell => {
-				const id = cell.dataset.id;
-				const value = parseInt(id[1]) * 100; // row * 100
-				cell.innerHTML = value;
-				cell.classList.remove('revealed');
-			});
-
-			alert('Board and user data have been reset. Reload the page to enter a new username.');
-		}
-
-		// Setup cells
-		document.querySelectorAll('.jeopardy-cell').forEach(cell => {
-			const id = cell.dataset.id;
-			if (revealedCells[id]) {
-				revealImage(cell, id);
-			}
-			cell.addEventListener('click', () => {
-				if (!cell.classList.contains('revealed')) {
-					revealImage(cell, id);
-				}
-				showModal(id);
-			});
-		});
-
-		// Buzzer logic
 		const STORAGE_KEY = 'quiz_buzzer_username';
 		const username = "<%= username %>";
 		localStorage.setItem(STORAGE_KEY, username);
@@ -220,39 +106,43 @@
 		const startBtn = document.getElementById('startBtn');
 		const connectionStatus = document.getElementById('connectionStatus');
 
-		function connect() {
-			if (ws && ws.readyState === WebSocket.OPEN) {
-				ws.close();
-			}
+		function updateConnectionStatus(type, icon, message) {
+			connectionStatus.className = `connection-status ${type}`;
+			connectionStatus.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+		}
 
+		function connect() {
+			if (ws && ws.readyState === WebSocket.OPEN) ws.close();
 			ws = new WebSocket(`${protocol}//${window.location.host}/?username=${encodeURIComponent(username)}`);
 
 			ws.onopen = () => {
 				reconnectAttempts = 0;
-				updateConnectionStatus('connected', '✅', 'Connected & Ready!');
-				status.innerText = "✅ Ready to play!";
+				updateConnectionStatus('connected', '🎯', 'Connected & Ready!');
+				status.innerText = "🎯 Ready to play!";
 			};
 
 			ws.onmessage = (event) => {
 				const data = JSON.parse(event.data);
 				switch (data.type) {
 					case 'gameState':
-						status.innerText = `🎬 Game state: ${data.state}`;
+						status.innerText = `🎮 Game state: ${data.state}`;
 						break;
 					case 'players':
 						playerList.innerText = `👥 Players: ${data.players.join(', ')}`;
 						break;
 					case 'gameStart':
-						status.innerText = `🚀 Countdown: ${data.countdown}`;
-						startBtn.disabled = true;
-						startBtn.classList.remove('pulse');
+						status.innerText = `🎉 Countdown: ${data.countdown}`;
+						if (startBtn) {
+							startBtn.disabled = true;
+							startBtn.classList.remove('pulse');
+						}
 						break;
 					case 'countdown':
-						status.innerText = `⏳ Starting in... ${data.count}`;
+						status.innerText = `⏱ Starting in... ${data.count}`;
 						status.classList.add('pulse');
 						break;
 					case 'gameActive':
-						status.innerText = `🔔 BUZZ NOW!`;
+						status.innerText = `🚨 BUZZ NOW!`;
 						status.classList.remove('pulse');
 						tapBtn.disabled = false;
 						tapBtn.classList.add('pulse');
@@ -261,19 +151,23 @@
 						tapBtn.disabled = true;
 						tapBtn.classList.remove('pulse');
 						status.innerText = `🏆 ${data.winner} wins! (${data.timestamp}ms)`;
-						startBtn.disabled = false;
-						startBtn.classList.add('pulse');
+						if (startBtn) {
+							startBtn.disabled = false;
+							startBtn.classList.add('pulse');
+						}
 						break;
 					case 'gameReset':
 						status.innerText = `🔄 Game reset. Ready for round 2!`;
 						tapBtn.disabled = true;
 						tapBtn.classList.remove('pulse');
-						startBtn.disabled = false;
-						startBtn.classList.add('pulse');
+						if (startBtn) {
+							startBtn.disabled = false;
+							startBtn.classList.add('pulse');
+						}
 						break;
 					case 'error':
 						if (data.message.includes('Username taken')) {
-							alert('❗ Username already taken! Please choose a different name.');
+							alert('⚠️ Username already taken! Please choose a different name.');
 							changeUsername();
 						} else {
 							alert(`Error: ${data.message}`);
@@ -286,35 +180,24 @@
 				updateConnectionStatus('disconnected', '❌', 'Disconnected');
 				status.innerText = "Connection lost...";
 				tapBtn.disabled = true;
-				startBtn.disabled = true;
-
+				if (startBtn) startBtn.disabled = true;
 				if (reconnectAttempts < maxReconnectAttempts) {
 					reconnectAttempts++;
 					updateConnectionStatus('reconnecting', '🔄', `Reconnecting... (${reconnectAttempts}/${maxReconnectAttempts})`);
-					reconnectTimeout = setTimeout(() => {
-						connect();
-					}, 2000 * reconnectAttempts);
+					reconnectTimeout = setTimeout(connect, 2000 * reconnectAttempts);
 				} else {
 					updateConnectionStatus('disconnected', '❌', 'Connection failed. Please refresh!');
 				}
 			};
-
 			ws.onerror = (error) => {
 				console.error('WebSocket error:', error);
 				updateConnectionStatus('disconnected', '❌', 'Connection error');
 			};
 		}
 
-		function updateConnectionStatus(type, icon, message) {
-			connectionStatus.className = `connection-status ${type}`;
-			connectionStatus.innerHTML = `<span>${icon}</span><span>${message}</span>`;
-		}
-
 		function refreshConnection() {
 			reconnectAttempts = 0;
-			if (reconnectTimeout) {
-				clearTimeout(reconnectTimeout);
-			}
+			if (reconnectTimeout) clearTimeout(reconnectTimeout);
 			updateConnectionStatus('reconnecting', '🔄', 'Reconnecting...');
 			connect();
 		}
@@ -333,18 +216,19 @@
 			}
 		});
 
-		startBtn.addEventListener('click', () => {
-			if (ws && ws.readyState === WebSocket.OPEN) {
-				ws.send(JSON.stringify({type: 'startGame'}));
-				startBtn.disabled = true;
-				startBtn.classList.remove('pulse');
-			}
-		});
+		if (startBtn) {
+			startBtn.addEventListener('click', () => {
+				if (ws && ws.readyState === WebSocket.OPEN) {
+					ws.send(JSON.stringify({type: 'startGame'}));
+					startBtn.disabled = true;
+					startBtn.classList.remove('pulse');
+				}
+			});
+			startBtn.classList.add('pulse');
+		}
 
 		document.addEventListener('visibilitychange', () => {
-			if (!document.hidden && ws && ws.readyState !== WebSocket.OPEN) {
-				refreshConnection();
-			}
+			if (!document.hidden && ws && ws.readyState !== WebSocket.OPEN) refreshConnection();
 		});
 
 		window.addEventListener('beforeunload', () => {
@@ -352,7 +236,6 @@
 		});
 
 		connect();
-		startBtn.classList.add('pulse');
 	</script>
 </body>
 
