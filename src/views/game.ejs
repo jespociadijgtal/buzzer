@@ -103,11 +103,13 @@
 		<button id="tapBtn" disabled>≡ƒÜ¿ TAP</button>
 	</div>
 
-
-
 	<script>
 		const username = "<%= username %>";
-		const ws = new WebSocket(`ws://${location.host}/?username=${username}`);
+
+		// ✅ FIX: Use dynamic WebSocket protocol based on the current page (http vs https)
+		const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+		const ws = new WebSocket(`${protocol}//${window.location.host}/?username=${username}`);
+
 		const status = document.getElementById('status');
 		const playerList = document.getElementById('playerList');
 		const tapBtn = document.getElementById('tapBtn');
@@ -131,11 +133,11 @@
 					status.innerText = `Starting in... ${data.count}`;
 					break;
 				case 'gameActive':
-					status.innerText = '≡ƒÜ¿ GO! TAP NOW!';
+					status.innerText = '🚨 GO! TAP NOW!';
 					tapBtn.disabled = false;
 					break;
 				case 'winner':
-					status.innerText = `≡ƒÄë ${data.winner} won the game!`;
+					status.innerText = `🏆 ${data.winner} won the game!`;
 					tapBtn.disabled = true;
 					startBtn.disabled = false;
 					break;
@@ -155,7 +157,8 @@
 			ws.send(JSON.stringify({type: 'startGame'}));
 		};
 	</script>
+
+
 </body>
 
 </html>
-
