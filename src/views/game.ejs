@@ -4,122 +4,124 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Buzzer Game – <%= username %>
+	<title>Quiz Buzzer – <%= username %>
 	</title>
-	<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+
+	<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500&display=swap" rel="stylesheet">
 
 	<style>
 		:root {
-			--bg: #0e0e0e;
-			--fg: #f1f1f1;
-			--accent: #00ffcc;
-			--hover: #00e6b8;
-			--danger: #ff4d4d;
+			--bg: #fffaf2;
+			--text: #333;
+			--primary: #ff9f1c;
+			--accent: #2ec4b6;
+			--soft: #f4f4f4;
+			--tap-red: #ff6b6b;
 		}
 
 		body {
 			background-color: var(--bg);
-			color: var(--fg);
-			font-family: 'Orbitron', sans-serif;
+			color: var(--text);
+			font-family: 'Fredoka', sans-serif;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
 			justify-content: flex-start;
+			padding: 2rem 1rem;
 			min-height: 100vh;
 			margin: 0;
-			padding: 2rem 1rem;
 			text-align: center;
 		}
 
 		h1 {
 			font-size: 2.5rem;
-			margin-bottom: 0.5em;
-			color: var(--accent);
+			color: var(--primary);
+			margin-bottom: 0.3em;
 		}
 
 		#status {
-			font-size: 1.5rem;
+			font-size: 1.3rem;
 			color: var(--accent);
 			margin-bottom: 1em;
 		}
 
 		#playerList {
-			margin-bottom: 1.5em;
 			font-size: 1.1rem;
-			color: #aaa;
+			color: #666;
+			margin-bottom: 1.5em;
 		}
 
 		#startBtn {
-			background-color: #222;
-			color: var(--accent);
-			border: 2px solid var(--accent);
-			font-size: 1rem;
-			padding: 0.7rem 1.5rem;
-			border-radius: 10px;
+			background-color: var(--accent);
+			color: #fff;
+			border: none;
+			font-size: 1.1rem;
+			padding: 0.75rem 1.8rem;
+			border-radius: 12px;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 			cursor: pointer;
-			transition: all 0.2s ease-in-out;
+			transition: background-color 0.2s ease;
 			margin-bottom: 2rem;
 		}
 
 		#startBtn:hover {
-			background-color: var(--accent);
-			color: #000;
+			background-color: #25b0a6;
 		}
 
 		#buzzerContainer {
-			margin-top: 2rem;
-			display: flex;
-			align-items: center;
-			justify-content: center;
+			margin-top: 1rem;
 		}
 
 		#tapBtn {
-			width: 180px;
-			height: 180px;
+			width: 160px;
+			height: 160px;
 			border-radius: 50%;
-			background: radial-gradient(circle at 30% 30%, var(--danger), #b30000);
+			background-color: var(--tap-red);
 			border: none;
-			box-shadow: 0 0 40px var(--danger), inset 0 0 15px #660000;
-			color: white;
-			font-size: 1.8rem;
+			box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+			color: #fff;
+			font-size: 2rem;
 			font-weight: bold;
 			cursor: pointer;
-			transition: transform 0.1s ease, box-shadow 0.1s ease;
+			transition: all 0.2s ease;
 		}
 
-		#tapBtn:active {
-			transform: scale(0.96);
-			box-shadow: 0 0 12px var(--danger), inset 0 0 5px #330000;
+		#tapBtn:hover:not(:disabled) {
+			transform: scale(1.05);
+		}
+
+		#tapBtn:active:not(:disabled) {
+			transform: scale(0.95);
 		}
 
 		#tapBtn:disabled {
-			background: radial-gradient(circle at 30% 30%, #8b0000, #4d0000);
-			box-shadow: none;
-			color: #888;
+			background-color: #ffc5c5;
+			color: #aaa;
 			cursor: not-allowed;
+			box-shadow: none;
 		}
 
 		footer {
 			margin-top: 3rem;
-			font-size: 0.85rem;
-			color: #444;
+			font-size: 0.9rem;
+			color: #aaa;
 		}
 	</style>
 </head>
 
 <body>
-	<h1>Hi, <%= username %>!</h1>
+	<h1>Welcome, <%= username %> 👋</h1>
 
-	<div id="status">Connecting...</div>
-	<div id="playerList">Players: waiting...</div>
+	<div id="status">Connecting to the fun center...</div>
+	<div id="playerList">Loading players…</div>
 
-	<button id="startBtn">Start Game</button>
+	<button id="startBtn">Start the Show 🎬</button>
 
 	<div id="buzzerContainer">
-		<button id="tapBtn" disabled>🚨 TAP</button>
+		<button id="tapBtn" disabled>🛎️ BUZZ</button>
 	</div>
 
-	<footer>Be the fastest to buzz in.</footer>
+	<footer>Quick on the buzz = bragging rights for life. (Probably.)</footer>
 
 	<script>
 		const username = "<%= username %>";
@@ -136,43 +138,17 @@
 
 			switch (data.type) {
 				case 'gameState':
-					status.innerText = `Game state: ${data.state}`;
+					status.innerText = `🎮 Game state: ${data.state}`;
 					break;
 				case 'players':
-					playerList.innerText = `Players: ${data.players.join(', ')}`;
+					playerList.innerText = `👥 Players: ${data.players.join(', ')}`;
 					break;
 				case 'gameStart':
-					status.innerText = `Get ready... ${data.countdown}`;
+					status.innerText = `Get ready... Countdown: ${data.countdown}`;
 					startBtn.disabled = true;
 					break;
 				case 'countdown':
-					status.innerText = `Starting in... ${data.count}`;
+					status.innerText = `⏳ Starting in... ${data.count}`;
 					break;
 				case 'gameActive':
-					status.innerText = '🚀 GO! TAP NOW!';
-					tapBtn.disabled = false;
-					break;
-				case 'winner':
-					status.innerText = `🏆 ${data.winner} won the game!`;
-					tapBtn.disabled = true;
-					startBtn.disabled = false;
-					break;
-				case 'gameReset':
-					status.innerText = 'Game reset.';
-					tapBtn.disabled = true;
-					startBtn.disabled = false;
-					break;
-			}
-		};
-
-		tapBtn.onclick = () => {
-			ws.send(JSON.stringify({type: 'tap', username: username, timestamp: Date.now()}));
-		};
-
-		startBtn.onclick = () => {
-			ws.send(JSON.stringify({type: 'startGame'}));
-		};
-	</script>
-</body>
-
-</html>
+					s
