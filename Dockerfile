@@ -11,12 +11,13 @@ RUN npm install
 # 4. Copy your app source code
 COPY tsconfig.json ./
 COPY src ./src
+COPY public ./public
 
 # 5. Build the TypeScript app
 RUN npm run build
 
-# 6. Manually copy views to dist
-RUN cp -r src/views dist/
+# 6. Copy views and public into dist
+RUN mkdir -p dist/views && cp -r src/views/* dist/views/ && cp -r public dist/
 
 # 7. Expose port and run the app
 EXPOSE 8000
