@@ -1,54 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<meta charset="UTF-8">
-	<title>Enter Username</title>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Enter Game - Buzzer</title>
+	<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
 	<style>
 		body {
-			font-family: sans-serif;
+			background-color: #0e0e0e;
+			color: #f1f1f1;
+			font-family: 'Orbitron', sans-serif;
 			display: flex;
-			justify-content: center;
+			flex-direction: column;
 			align-items: center;
-			height: 100vh;
-			background: #f9f9f9;
+			justify-content: center;
+			min-height: 100vh;
+			margin: 0;
+			text-align: center;
+			padding: 1rem;
 		}
+
+		h1 {
+			font-size: 3rem;
+			color: #00ffcc;
+			margin-bottom: 0.5em;
+		}
+
 		form {
-			background: white;
-			padding: 2rem;
+			background-color: #1a1a1a;
+			border: 2px solid #00ffcc;
+			padding: 2rem 2.5rem;
 			border-radius: 12px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			box-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
+			width: 100%;
+			max-width: 400px;
 		}
-		input {
-			padding: 0.5rem;
-			font-size: 1rem;
-			margin-right: 0.5rem;
+
+		label {
+			font-size: 1.2rem;
+			display: block;
+			margin-bottom: 0.5rem;
+			color: #ccc;
 		}
-		button {
-			padding: 0.5rem 1rem;
-			font-size: 1rem;
-			background-color: #007bff;
-			color: white;
+
+		input[type="text"] {
+			width: 100%;
+			padding: 0.7rem;
+			font-size: 1.1rem;
+			border-radius: 8px;
+			border: 1px solid #0ff;
+			background-color: #0a0a0a;
+			color: #fff;
+			margin-bottom: 1.5rem;
+			outline: none;
+		}
+
+		input[type="submit"] {
+			background-color: #0ff;
+			color: #000;
+			font-size: 1.1rem;
+			padding: 0.8rem 2rem;
 			border: none;
-			border-radius: 4px;
+			border-radius: 8px;
 			cursor: pointer;
+			transition: background-color 0.2s ease;
+			font-weight: bold;
+		}
+
+		input[type="submit"]:hover {
+			background-color: #00e6b8;
+		}
+
+		footer {
+			margin-top: 2rem;
+			font-size: 0.9rem;
+			color: #555;
 		}
 	</style>
 </head>
+
 <body>
-	<form id="usernameForm">
-		<input type="text" id="usernameInput" placeholder="Enter your name" required />
-		<button type="submit">Join Game</button>
+	<h1>Welcome to Buzzer Game</h1>
+	<form action="/" method="GET" onsubmit="return goToGame(event)">
+		<label for="username">Enter your username</label>
+		<input type="text" id="username" name="username" required placeholder="e.g. player1" />
+		<input type="submit" value="Join Game" />
 	</form>
 
+	<footer>Powered by WebSocket • Real-time reaction challenge</footer>
+
 	<script>
-		document.getElementById('usernameForm').addEventListener('submit', function (e) {
-			e.preventDefault();
-			const username = document.getElementById('usernameInput').value.trim();
+		function goToGame(event) {
+			event.preventDefault();
+			const username = document.getElementById('username').value.trim();
 			if (username) {
-				window.location.href = '/' + encodeURIComponent(username);
+				window.location.href = `/${encodeURIComponent(username)}`;
 			}
-		});
+		}
 	</script>
 </body>
-</html>
 
+</html>
