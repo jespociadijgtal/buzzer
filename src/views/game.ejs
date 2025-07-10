@@ -110,7 +110,7 @@
 </head>
 
 <body>
-	<h1>Welcome, <%= username %> 👋</h1>
+	<h1>Welcome, <%= username %> 🎉</h1>
 
 	<div id="status">Connecting to the fun center...</div>
 	<div id="playerList">Loading players…</div>
@@ -118,7 +118,7 @@
 	<button id="startBtn">Start the Show 🎬</button>
 
 	<div id="buzzerContainer">
-		<button id="tapBtn" disabled>🛎️ BUZZ</button>
+		<button id="tapBtn" disabled>🔔 BUZZ</button>
 	</div>
 
 	<footer>Quick on the buzz = bragging rights for life. (Probably.)</footer>
@@ -126,12 +126,16 @@
 	<script>
 		const username = "<%= username %>";
 		const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-		const ws = new WebSocket(`${protocol}//${window.location.host}/?username=${username}`);
+		const ws = new WebSocket(`${protocol}//${window.location.host}/?username=${encodeURIComponent(username)}`);
 
 		const status = document.getElementById('status');
 		const playerList = document.getElementById('playerList');
 		const tapBtn = document.getElementById('tapBtn');
 		const startBtn = document.getElementById('startBtn');
+
+		ws.onopen = () => {
+			status.innerText = "✅ Connected!";
+		};
 
 		ws.onmessage = (event) => {
 			const data = JSON.parse(event.data);
@@ -151,4 +155,41 @@
 					status.innerText = `⏳ Starting in... ${data.count}`;
 					break;
 				case 'gameActive':
-					s
+					status.innerText = `🚨 GO! Buzz now!`;
+					tapBtn.disabled = false;
+					break;
+				case 'winner':
+					tapBtn.disabled = true;
+					status.innerText = `🏆 ${data.winner} buzzed first at ${data.timestamp}ms!`;
+					startBtn.disabled = false;
+					break;
+				case 'gameReset':
+					status.innerText = `🔁 Game reset. Ready when you are!`;
+					tapBtn.disabled = true;
+					startBtn.disabled = false;
+					break;
+				case 'error':
+					alert(data.message);
+					window.location.href = '/';
+					break;
+			}
+		};
+
+		tapBtn.addEventListener('click', () => {
+			const timestamp = performance.now().toFixed(1);
+			ws.send(JSON.stringify({
+				type: 'tap',
+				username,
+				timestamp
+			}));
+			tapBtn.disabled = true;
+		});
+
+		startBtn.addEventListener('click', () => {
+			ws.send(JSON.stringify({type: 'startGame'}));
+			startBtn.disabled = true;
+		});
+	</script>
+</body>
+
+</html>

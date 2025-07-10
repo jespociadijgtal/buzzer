@@ -4,7 +4,7 @@ type Request = expressPkg.Request;
 type Response = expressPkg.Response;
 
 import { WebSocketServer, WebSocket } from 'ws';
-import type { RawData } from 'ws'
+import type { RawData } from 'ws';
 import http, { IncomingMessage } from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -34,7 +34,7 @@ app.get('/', (req: Request, res: Response) => {
 	res.render('form');
 });
 
-// Web route
+// Game page with dynamic username
 app.get('/:username', (req: Request, res: Response) => {
 	const username = req.params.username;
 	res.render('game', { username });
@@ -44,6 +44,7 @@ app.get('/:username', (req: Request, res: Response) => {
 wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
 	const url = new URL(req.url || '', `http://${req.headers.host}`);
 	const username = url.searchParams.get('username');
+
 	if (!username) return ws.close();
 
 	if (players.has(username)) {
@@ -52,14 +53,13 @@ wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
 	}
 
 	players.set(username, ws);
+	console.log(`🟢 ${username} connected`);
 	sendPlayerList();
-
 	ws.send(JSON.stringify({ type: 'gameState', state: gameState }));
 
 	ws.on('message', (msg: RawData) => {
 		try {
 			const data = JSON.parse(msg.toString());
-
 			switch (data.type) {
 				case 'startGame':
 					if (gameState === 'waiting' || gameState === 'finished') startCountdown();
@@ -69,12 +69,13 @@ wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
 					break;
 			}
 		} catch (err) {
-			console.error('Invalid message format:', err);
+			console.error('❌ Invalid message format:', err);
 		}
 	});
 
 	ws.on('close', () => {
 		players.delete(username);
+		console.log(`🔴 ${username} disconnected`);
 		sendPlayerList();
 		if (players.size === 0) resetGame();
 	});
@@ -111,7 +112,7 @@ function startCountdown() {
 }
 
 function startGame() {
-	const delay = Math.random() * 4000 + 1000;
+	const delay = Math.random() * 4000 + 1000; // 1–5 sec
 	gameTimer = setTimeout(() => {
 		gameState = 'active';
 		broadcast({ type: 'gameActive' });
@@ -132,6 +133,9 @@ function resetGame() {
 	broadcast({ type: 'gameReset' });
 }
 
+// Start server
 const PORT = process.env.PORT || 8000;
-server.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
+server.listen(PORT, () => {
+	console.log(`🚀 Server running at http://localhost:${PORT}`);
+});
 
