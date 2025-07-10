@@ -63,14 +63,18 @@
 			<div id="playerList" class="player-list">Loading players...</div>
 		</div>
 
+
 		<div class="buzzer-card">
 			<div class="buzzer-container">
-				<button id="startBtn" class="start-btn">
-					<span>🚀 Start the Show</span>
-				</button>
-				<button id="tapBtn" class="buzz-button" disabled>
-					<span>🔔 BUZZ</span>
-				</button>
+				<% if (username==='Master' ) { %>
+					<button id="startBtn" class="start-btn">
+						<span>🚀 Start the Show</span>
+					</button>
+					<% } %>
+						<button id="tapBtn" class="buzz-button" disabled>
+
+							<span>🔔 BUZZ</span>
+						</button>
 			</div>
 		</div>
 
