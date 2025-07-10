@@ -4,8 +4,7 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Enter Quiz Arena 🎮</title>
-
+	<title>Enter Quiz Arena 🎪</title>
 	<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500&display=swap" rel="stylesheet">
 	<style>
 		body {
@@ -25,6 +24,8 @@
 			padding: 2rem 2.5rem;
 			border-radius: 15px;
 			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+			max-width: 400px;
+			width: 90%;
 		}
 
 		h1 {
@@ -45,6 +46,11 @@
 			border-radius: 10px;
 			font-size: 1rem;
 			outline: none;
+			transition: border-color 0.2s ease;
+		}
+
+		input[type="text"]:focus {
+			border-color: #ff9f1c;
 		}
 
 		button {
@@ -62,31 +68,122 @@
 			background-color: #25b0a6;
 		}
 
+		.welcome-back {
+			background-color: #f0f9ff;
+			border: 2px solid #2ec4b6;
+			padding: 1rem;
+			border-radius: 10px;
+			margin-bottom: 1rem;
+		}
+
+		.welcome-back h2 {
+			color: #2ec4b6;
+			margin: 0 0 0.5rem 0;
+			font-size: 1.3rem;
+		}
+
+		.welcome-back p {
+			margin: 0 0 1rem 0;
+			color: #666;
+		}
+
+		.button-group {
+			display: flex;
+			gap: 0.5rem;
+			justify-content: center;
+		}
+
+		.secondary-btn {
+			background-color: #f4f4f4;
+			color: #333;
+			border: 2px solid #ddd;
+		}
+
+		.secondary-btn:hover {
+			background-color: #e9e9e9;
+		}
+
 		p {
 			margin-top: 1rem;
 			color: #888;
 			font-size: 0.95rem;
+		}
+
+		.hidden {
+			display: none;
 		}
 	</style>
 </head>
 
 <body>
 	<div class="container">
-		<h1>Ready to Buzz? 🐝</h1>
-		<form action="/" method="GET" onsubmit="return goToGame(event)">
-			<input type="text" id="username" name="username" placeholder="Enter your glorious name..." required />
-			<button type="submit">Join the Mayhem 🚀</button>
-		</form>
-		<p>Don’t worry, we won’t judge your username. Much.</p>
+		<!-- Welcome back section for returning users -->
+		<div id="welcomeBack" class="welcome-back hidden">
+			<h2>Welcome back! 👋</h2>
+			<p>Continue as <strong id="savedUsername"></strong>?</p>
+			<div class="button-group">
+				<button type="button" onclick="continueAsUser()">Continue 🚀</button>
+				<button type="button" class="secondary-btn" onclick="changeUsername()">Change Name</button>
+			</div>
+		</div>
+
+		<!-- Regular form for new users -->
+		<div id="newUserForm">
+			<h1>Ready to Buzz? ⚡</h1>
+			<form action="/" method="GET" onsubmit="return goToGame(event)">
+				<input type="text" id="username" name="username" placeholder="Enter your glorious name..." required />
+				<button type="submit">Join the Mayhem 🔥</button>
+			</form>
+			<p>Don't worry, we won't judge your username. Much.</p>
+		</div>
 	</div>
 
 	<script>
+		const STORAGE_KEY = 'quiz_buzzer_username';
+
+		// Check for saved username on page load
+		document.addEventListener('DOMContentLoaded', function () {
+			const savedUsername = localStorage.getItem(STORAGE_KEY);
+			if (savedUsername && savedUsername.trim()) {
+				showWelcomeBack(savedUsername);
+			}
+		});
+
+		function showWelcomeBack(username) {
+			document.getElementById('savedUsername').textContent = username;
+			document.getElementById('welcomeBack').classList.remove('hidden');
+			document.getElementById('newUserForm').classList.add('hidden');
+		}
+
+		function continueAsUser() {
+			const username = localStorage.getItem(STORAGE_KEY);
+			if (username) {
+				window.location.href = `/${encodeURIComponent(username)}`;
+			}
+		}
+
+		function changeUsername() {
+			// Clear saved username and show the form
+			localStorage.removeItem(STORAGE_KEY);
+			document.getElementById('welcomeBack').classList.add('hidden');
+			document.getElementById('newUserForm').classList.remove('hidden');
+			document.getElementById('username').focus();
+		}
+
 		function goToGame(event) {
 			event.preventDefault();
 			const name = document.getElementById('username').value.trim();
 			if (name) {
+				// Save username to localStorage
+				localStorage.setItem(STORAGE_KEY, name);
 				window.location.href = `/${encodeURIComponent(name)}`;
 			}
+		}
+
+		// Optional: Clear saved username if user explicitly wants to start fresh
+		function clearSavedData() {
+			localStorage.removeItem(STORAGE_KEY);
+			location.reload();
 		}
 	</script>
 </body>
