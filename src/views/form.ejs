@@ -4,12 +4,20 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Enter Game - Buzzer</title>
+	<title>Join Quiz Buzzer</title>
 	<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
 	<style>
+		:root {
+			--bg: #0e0e0e;
+			--fg: #f1f1f1;
+			--accent: #00ffcc;
+			--hover: #00e6b8;
+			--border: #00ffcc;
+		}
+
 		body {
-			background-color: #0e0e0e;
-			color: #f1f1f1;
+			background-color: var(--bg);
+			color: var(--fg);
 			font-family: 'Orbitron', sans-serif;
 			display: flex;
 			flex-direction: column;
@@ -17,78 +25,93 @@
 			justify-content: center;
 			min-height: 100vh;
 			margin: 0;
+			padding: 2rem;
 			text-align: center;
-			padding: 1rem;
 		}
 
 		h1 {
-			font-size: 3rem;
-			color: #00ffcc;
-			margin-bottom: 0.5em;
+			font-size: 2.5rem;
+			color: var(--accent);
+			margin-bottom: 1.5rem;
 		}
 
 		form {
-			background-color: #1a1a1a;
-			border: 2px solid #00ffcc;
-			padding: 2rem 2.5rem;
+			background: #1a1a1a;
+			border: 2px solid var(--border);
+			padding: 2rem;
 			border-radius: 12px;
-			box-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
 			width: 100%;
-			max-width: 400px;
+			max-width: 380px;
+			box-shadow: 0 0 25px rgba(0, 255, 204, 0.15);
+			animation: fadeIn 0.4s ease-out;
 		}
 
 		label {
-			font-size: 1.2rem;
+			font-size: 1.1rem;
 			display: block;
-			margin-bottom: 0.5rem;
+			margin-bottom: 0.6rem;
 			color: #ccc;
 		}
 
 		input[type="text"] {
 			width: 100%;
-			padding: 0.7rem;
-			font-size: 1.1rem;
+			padding: 0.75rem 1rem;
+			font-size: 1rem;
 			border-radius: 8px;
-			border: 1px solid #0ff;
+			border: 1px solid var(--accent);
 			background-color: #0a0a0a;
-			color: #fff;
+			color: var(--fg);
 			margin-bottom: 1.5rem;
 			outline: none;
 		}
 
 		input[type="submit"] {
-			background-color: #0ff;
+			background-color: var(--accent);
 			color: #000;
-			font-size: 1.1rem;
-			padding: 0.8rem 2rem;
+			font-size: 1rem;
+			padding: 0.75rem 1.8rem;
 			border: none;
 			border-radius: 8px;
 			cursor: pointer;
-			transition: background-color 0.2s ease;
 			font-weight: bold;
+			transition: background-color 0.2s ease;
 		}
 
 		input[type="submit"]:hover {
-			background-color: #00e6b8;
+			background-color: var(--hover);
 		}
 
 		footer {
 			margin-top: 2rem;
-			font-size: 0.9rem;
+			font-size: 0.85rem;
 			color: #555;
+		}
+
+		@keyframes fadeIn {
+			from {
+				opacity: 0;
+				transform: translateY(10px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
 		}
 	</style>
 </head>
 
 <body>
-	<h1>Welcome to Buzzer Game</h1>
+
+	<h1>Join the Quiz Buzzer</h1>
+
 	<form action="/" method="GET" onsubmit="return goToGame(event)">
-		<label for="username">Enter your username</label>
-		<input type="text" id="username" name="username" required placeholder="e.g. player1" />
-		<input type="submit" value="Join Game" />
+		<label for="username">Username</label>
+		<input type="text" id="username" name="username" required placeholder="e.g. team1" autocomplete="off" />
+		<input type="submit" value="Enter Game" />
 	</form>
 
-	<footer>Powered by WebSocket • Real-time reaction challenge</footer>
+	<footer>Fastest finger wins ⚡</footer>
 
 	<script>
 		function goToGame(event) {
@@ -99,6 +122,7 @@
 			}
 		}
 	</script>
+
 </body>
 
 </html>
