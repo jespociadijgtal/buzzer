@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Enter Quiz Arena 🎪</title>
+	<title>Enter Quiz Arena 🎯</title>
 	<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500&display=swap" rel="stylesheet">
 	<style>
 		body {
@@ -117,9 +117,8 @@
 
 <body>
 	<div class="container">
-		<!-- Welcome back section for returning users -->
 		<div id="welcomeBack" class="welcome-back hidden">
-			<h2>Welcome back! 👋</h2>
+			<h2>Welcome back! 🎉</h2>
 			<p>Continue as <strong id="savedUsername"></strong>?</p>
 			<div class="button-group">
 				<button type="button" onclick="continueAsUser()">Continue 🚀</button>
@@ -127,12 +126,12 @@
 			</div>
 		</div>
 
-		<!-- Regular form for new users -->
 		<div id="newUserForm">
-			<h1>Ready to Buzz? ⚡</h1>
-			<form action="/" method="GET" onsubmit="return goToGame(event)">
-				<input type="text" id="username" name="username" placeholder="Enter your glorious name..." required />
-				<button type="submit">Join the Mayhem 🔥</button>
+			<h1>Ready to Buzz? 🔔</h1>
+			<form onsubmit="return goToGame(event)">
+				<input type="text" id="username" placeholder="Enter your glorious name..." required />
+				<input type="password" id="password" placeholder="Enter password..." required />
+				<button type="submit">Join the Mayhem 🎮</button>
 			</form>
 			<p>Don't worry, we won't judge your username. Much.</p>
 		</div>
@@ -141,7 +140,6 @@
 	<script>
 		const STORAGE_KEY = 'quiz_buzzer_username';
 
-		// Check for saved username on page load
 		document.addEventListener('DOMContentLoaded', function () {
 			const savedUsername = localStorage.getItem(STORAGE_KEY);
 			if (savedUsername && savedUsername.trim()) {
@@ -157,13 +155,14 @@
 
 		function continueAsUser() {
 			const username = localStorage.getItem(STORAGE_KEY);
-			if (username) {
-				window.location.href = `/${encodeURIComponent(username)}`;
+			const password = prompt("Please enter the password:");
+			if (username && password) {
+				const query = new URLSearchParams({username, password}).toString();
+				window.location.href = `/?${query}`;
 			}
 		}
 
 		function changeUsername() {
-			// Clear saved username and show the form
 			localStorage.removeItem(STORAGE_KEY);
 			document.getElementById('welcomeBack').classList.add('hidden');
 			document.getElementById('newUserForm').classList.remove('hidden');
@@ -173,17 +172,13 @@
 		function goToGame(event) {
 			event.preventDefault();
 			const name = document.getElementById('username').value.trim();
-			if (name) {
-				// Save username to localStorage
-				localStorage.setItem(STORAGE_KEY, name);
-				window.location.href = `/${encodeURIComponent(name)}`;
-			}
-		}
+			const password = document.getElementById('password').value;
 
-		// Optional: Clear saved username if user explicitly wants to start fresh
-		function clearSavedData() {
-			localStorage.removeItem(STORAGE_KEY);
-			location.reload();
+			if (name && password) {
+				localStorage.setItem(STORAGE_KEY, name);
+				const query = new URLSearchParams({username: name, password}).toString();
+				window.location.href = `/?${query}`;
+			}
 		}
 	</script>
 </body>

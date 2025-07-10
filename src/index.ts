@@ -24,17 +24,29 @@ const players = new Map<string, WebSocket>();
 let gameTimer: NodeJS.Timeout | null = null;
 let countdownTimer: NodeJS.Timeout | null = null;
 
+const REQUIRED_PASSWORD = 'buzz123'; // 🔐 You can change this or move it to env
+
 // View & static config
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Home route to enter username
+// Home route (form + password check)
 app.get('/', (req: Request, res: Response) => {
-	res.render('form');
+	const { username, password } = req.query;
+
+	if (!username || !password) {
+		return res.render('form'); // Show the form
+	}
+
+	if (password !== REQUIRED_PASSWORD) {
+		return res.status(401).send('Incorrect password. <a href="/">Try again</a>.');
+	}
+
+	res.redirect(`/${encodeURIComponent(username as string)}`);
 });
 
-// Game page with dynamic username
+// Game page with username
 app.get('/:username', (req: Request, res: Response) => {
 	const username = req.params.username;
 	res.render('game', { username });
@@ -53,7 +65,7 @@ wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
 	}
 
 	players.set(username, ws);
-	console.log(`🟢 ${username} connected`);
+	console.log(`✅ ${username} connected`);
 	sendPlayerList();
 	ws.send(JSON.stringify({ type: 'gameState', state: gameState }));
 
@@ -75,7 +87,7 @@ wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
 
 	ws.on('close', () => {
 		players.delete(username);
-		console.log(`🔴 ${username} disconnected`);
+		console.log(`❌ ${username} disconnected`);
 		sendPlayerList();
 		if (players.size === 0) resetGame();
 	});

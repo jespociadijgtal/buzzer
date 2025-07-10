@@ -89,18 +89,55 @@
 	<script>
 		const JEOPARDY_KEY = 'revealedJeopardyCells';
 		const revealedCells = JSON.parse(localStorage.getItem(JEOPARDY_KEY)) || {};
+		const columnImages = {
+			BoomAction: [
+				'mission-impossible.webp',
+				'kill-bill.jpg',
+				'die_hard.jpg',
+				'tokyo_drift.jpg',
+				'speed.jpg'
+			],
+			LaughAttack: [
+				'private-benjamin.webp',
+				'home-alone.webp',
+				'shaun-of-the-dead.webp',
+				'zohan.webp',
+				'thousand-words.webp'
+			],
+			CreepyWeird: [
+				'the-healing.webp',
+				'evil-dead.webp',
+				'midsommar.webp',
+				'midnight-mass.webp',
+				'cure-to-wellness.webp'
+			],
+			TearsFeels: [
+				'up.webp',
+				'miracle-in-cell-7.webp',
+				'bridge-to-terabithia.webp',
+				'all-the-bright-places.webp',
+				'wolf-children.webp',
+			],
+			SciFry: [
+				'ET.webp',
+				'alien.webp',
+				'planet-of-the-apes.webp',
+				'interstellar.webp',
+				'alita.webp',
+			]
+		};
 
-		const imagePaths = [
-			'mission-impossible.webp', 'private-benjamin.webp', 'the-healing.webp', 'img_0_0.jpg', 'img_0_0.jpg', // Row 1
-			// --------------------------------------------------------------------------------------------
-			'kill-bill.jpg', 'home-alone.webp', 'evil-dead.webp', 'img_0_0.jpg', 'img_0_0.jpg',             // Row 2
-			// --------------------------------------------------------------------------------------------
-			'die_hard.jpg', 'shaun-of-the-dead.webp', 'midsommar.webp', 'img_0_0.jpg', 'img_0_0.jpg',       // Row 3
-			// --------------------------------------------------------------------------------------------
-			'tokyo_drift.jpg', 'zohan.webp', 'midnight-mass.webp', 'img_0_0.jpg', 'img_0_0.jpg',                   // Row 4
-			// --------------------------------------------------------------------------------------------
-			'speed.jpg', 'thousand-words.webp', 'cure-to-wellness.webp', 'img_0_0.jpg', 'img_0_0.jpg'       // Row 5
-		];
+		// Flatten into imagePaths row-major order (5 rows x 5 columns)
+		const categories = Object.keys(columnImages); // Preserves order
+		const imagePaths = [];
+
+		for (let row = 0; row < 5; row++) {
+			for (let col = 0; col < 5; col++) {
+				imagePaths.push(columnImages[categories[col]][row]);
+			}
+		}
+
+
 
 
 		const cellImages = {};
@@ -135,11 +172,12 @@
 		}
 
 		function resetBoard() {
-			localStorage.removeItem(JEOPARDY_KEY);
-			localStorage.removeItem(STORAGE_KEY);
+			localStorage.removeItem(JEOPARDY_KEY); // clears 'revealedJeopardyCells'
+			localStorage.removeItem(STORAGE_KEY);  // clears 'quiz_buzzer_username'
 
 			document.querySelectorAll('.jeopardy-cell').forEach(cell => {
-				const value = cell.dataset.id.match(/\d$/)[0] + "00";
+				const id = cell.dataset.id;
+				const value = parseInt(id[1]) * 100; // row * 100
 				cell.innerHTML = value;
 				cell.classList.remove('revealed');
 			});
