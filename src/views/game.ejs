@@ -8,497 +8,162 @@
 	</title>
 
 	<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-	<style>
-		* {
-			margin: 0;
-			padding: 0;
-			box-sizing: border-box;
-		}
-
-		:root {
-			--bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-			--card-bg: rgba(255, 255, 255, 0.95);
-			--text: #2c3e50;
-			--primary: #ff6b6b;
-			--secondary: #4ecdc4;
-			--accent: #45b7d1;
-			--success: #96ceb4;
-			--warning: #feca57;
-			--shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-			--shadow-light: 0 5px 15px rgba(0, 0, 0, 0.1);
-			--border-radius: 20px;
-		}
-
-		body {
-			background: var(--bg);
-			color: var(--text);
-			font-family: 'Fredoka', sans-serif;
-			min-height: 100vh;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			padding: 1rem;
-			position: relative;
-			overflow-x: hidden;
-		}
-
-		/* Floating background elements */
-		.bg-decoration {
-			position: fixed;
-			border-radius: 50%;
-			opacity: 0.1;
-			animation: float 6s ease-in-out infinite;
-			z-index: -1;
-		}
-
-		.bg-decoration:nth-child(1) {
-			top: 10%;
-			left: 10%;
-			width: 80px;
-			height: 80px;
-			background: var(--primary);
-			animation-delay: 0s;
-		}
-
-		.bg-decoration:nth-child(2) {
-			top: 20%;
-			right: 15%;
-			width: 60px;
-			height: 60px;
-			background: var(--secondary);
-			animation-delay: 2s;
-		}
-
-		.bg-decoration:nth-child(3) {
-			bottom: 15%;
-			left: 20%;
-			width: 100px;
-			height: 100px;
-			background: var(--accent);
-			animation-delay: 4s;
-		}
-
-		@keyframes float {
-
-			0%,
-			100% {
-				transform: translateY(0px) rotate(0deg);
-			}
-
-			50% {
-				transform: translateY(-20px) rotate(180deg);
-			}
-		}
-
-		/* Main container */
-		.game-container {
-			width: 100%;
-			max-width: 420px;
-			display: flex;
-			flex-direction: column;
-			gap: 1.5rem;
-			margin: 0 auto;
-		}
-
-		/* Header card */
-		.header-card {
-			background: var(--card-bg);
-			backdrop-filter: blur(10px);
-			border-radius: var(--border-radius);
-			padding: 1.5rem;
-			box-shadow: var(--shadow);
-			text-align: center;
-			position: relative;
-			overflow: hidden;
-		}
-
-		.header-card::before {
-			content: '';
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			height: 4px;
-			background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
-			border-radius: var(--border-radius) var(--border-radius) 0 0;
-		}
-
-		.username-display {
-			font-size: 1.8rem;
-			font-weight: 700;
-			color: var(--primary);
-			margin-bottom: 0.5rem;
-			text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-		}
-
-		.connection-status {
-			padding: 0.75rem 1rem;
-			border-radius: 15px;
-			font-size: 0.9rem;
-			font-weight: 500;
-			margin-bottom: 1rem;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			gap: 0.5rem;
-			transition: all 0.3s ease;
-		}
-
-		.connected {
-			background: linear-gradient(135deg, var(--success), #7ed6df);
-			color: white;
-			box-shadow: var(--shadow-light);
-		}
-
-		.disconnected {
-			background: linear-gradient(135deg, var(--primary), #ff7675);
-			color: white;
-			box-shadow: var(--shadow-light);
-		}
-
-		.reconnecting {
-			background: linear-gradient(135deg, var(--warning), #fdcb6e);
-			color: white;
-			box-shadow: var(--shadow-light);
-		}
-
-		/* Status card */
-		.status-card {
-			background: var(--card-bg);
-			backdrop-filter: blur(10px);
-			border-radius: var(--border-radius);
-			padding: 1.5rem;
-			box-shadow: var(--shadow);
-			text-align: center;
-			min-height: 120px;
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
-		}
-
-		.game-status {
-			font-size: 1.4rem;
-			font-weight: 600;
-			color: var(--text);
-			margin-bottom: 0.5rem;
-			min-height: 1.8rem;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-		}
-
-		.player-list {
-			font-size: 1rem;
-			color: #7f8c8d;
-			font-weight: 500;
-		}
-
-		/* Buzzer card */
-		.buzzer-card {
-			background: var(--card-bg);
-			backdrop-filter: blur(10px);
-			border-radius: var(--border-radius);
-			padding: 2rem;
-			box-shadow: var(--shadow);
-			text-align: center;
-			position: relative;
-		}
-
-		.buzzer-container {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			gap: 1.5rem;
-		}
-
-		.start-btn {
-			background: linear-gradient(135deg, var(--secondary), var(--accent));
-			color: white;
-			border: none;
-			font-size: 1.2rem;
-			font-weight: 600;
-			padding: 1rem 2rem;
-			border-radius: 15px;
-			cursor: pointer;
-			transition: all 0.3s ease;
-			box-shadow: var(--shadow-light);
-			position: relative;
-			overflow: hidden;
-		}
-
-		.start-btn::before {
-			content: '';
-			position: absolute;
-			top: 0;
-			left: -100%;
-			width: 100%;
-			height: 100%;
-			background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-			transition: left 0.5s ease;
-		}
-
-		.start-btn:hover::before {
-			left: 100%;
-		}
-
-		.start-btn:hover {
-			transform: translateY(-2px);
-			box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-		}
-
-		.start-btn:active {
-			transform: translateY(0);
-		}
-
-		.start-btn:disabled {
-			background: linear-gradient(135deg, #bdc3c7, #95a5a6);
-			cursor: not-allowed;
-			transform: none;
-			box-shadow: none;
-		}
-
-		.buzz-button {
-			width: 200px;
-			height: 200px;
-			border-radius: 50%;
-			background: linear-gradient(135deg, var(--primary), #ff5252);
-			border: none;
-			color: white;
-			font-size: 2.5rem;
-			font-weight: 700;
-			cursor: pointer;
-			position: relative;
-			transition: all 0.3s ease;
-			box-shadow: var(--shadow);
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			overflow: hidden;
-		}
-
-		.buzz-button::before {
-			content: '';
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			width: 0;
-			height: 0;
-			background: rgba(255, 255, 255, 0.3);
-			border-radius: 50%;
-			transform: translate(-50%, -50%);
-			transition: all 0.6s ease;
-		}
-
-		.buzz-button:hover:not(:disabled)::before {
-			width: 300px;
-			height: 300px;
-		}
-
-		.buzz-button:hover:not(:disabled) {
-			transform: scale(1.05);
-			box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4);
-		}
-
-		.buzz-button:active:not(:disabled) {
-			transform: scale(0.95);
-		}
-
-		.buzz-button:disabled {
-			background: linear-gradient(135deg, #bdc3c7, #95a5a6);
-			cursor: not-allowed;
-			transform: none;
-			box-shadow: var(--shadow-light);
-		}
-
-		/* Actions card */
-		.actions-card {
-			background: var(--card-bg);
-			backdrop-filter: blur(10px);
-			border-radius: var(--border-radius);
-			padding: 1.5rem;
-			box-shadow: var(--shadow);
-		}
-
-		.action-buttons {
-			display: flex;
-			gap: 1rem;
-			justify-content: center;
-			flex-wrap: wrap;
-		}
-
-		.action-btn {
-			background: rgba(255, 255, 255, 0.8);
-			color: var(--text);
-			border: 2px solid var(--accent);
-			padding: 0.75rem 1.5rem;
-			border-radius: 12px;
-			cursor: pointer;
-			transition: all 0.3s ease;
-			font-size: 0.9rem;
-			font-weight: 500;
-			text-decoration: none;
-			display: inline-block;
-		}
-
-		.action-btn:hover {
-			background: var(--accent);
-			color: white;
-			transform: translateY(-2px);
-			box-shadow: var(--shadow-light);
-		}
-
-		/* Fun footer */
-		.fun-footer {
-			background: var(--card-bg);
-			backdrop-filter: blur(10px);
-			border-radius: var(--border-radius);
-			padding: 1rem;
-			box-shadow: var(--shadow);
-			text-align: center;
-			margin-top: auto;
-		}
-
-		.fun-footer p {
-			font-size: 0.9rem;
-			color: #7f8c8d;
-			font-weight: 500;
-			margin: 0;
-		}
-
-		/* Pulsing animation for active states */
-		@keyframes pulse {
-			0% {
-				transform: scale(1);
-			}
-
-			50% {
-				transform: scale(1.05);
-			}
-
-			100% {
-				transform: scale(1);
-			}
-		}
-
-		.pulse {
-			animation: pulse 2s infinite;
-		}
-
-		/* Responsive design */
-		@media (max-width: 480px) {
-			.game-container {
-				max-width: 100%;
-				gap: 1rem;
-			}
-
-			.header-card,
-			.status-card,
-			.buzzer-card,
-			.actions-card,
-			.fun-footer {
-				padding: 1rem;
-			}
-
-			.username-display {
-				font-size: 1.5rem;
-			}
-
-			.game-status {
-				font-size: 1.2rem;
-			}
-
-			.buzz-button {
-				width: 160px;
-				height: 160px;
-				font-size: 2rem;
-			}
-
-			.start-btn {
-				font-size: 1.1rem;
-				padding: 0.8rem 1.5rem;
-			}
-
-			.action-buttons {
-				flex-direction: column;
-				align-items: center;
-			}
-
-			.action-btn {
-				width: 100%;
-				text-align: center;
-			}
-		}
-
-		@media (max-width: 360px) {
-			.buzz-button {
-				width: 140px;
-				height: 140px;
-				font-size: 1.8rem;
-			}
-		}
-	</style>
+	<link rel="stylesheet" href="/game.css">
 </head>
 
 <body>
-	<!-- Floating decorations -->
-	<div class="bg-decoration"></div>
-	<div class="bg-decoration"></div>
-	<div class="bg-decoration"></div>
 
-	<div class="game-container">
-		<!-- Header Section -->
+	<!-- Jeopardy Board (Desktop only) -->
+	<div class="jeopardy-board desktop-only">
+		<!-- Column Headers -->
+		<div class="jeopardy-row jeopardy-header-row">
+			<div class="jeopardy-header">Boom! Action</div>
+			<div class="jeopardy-header">Laugh Attack</div>
+			<div class="jeopardy-header">Creepy & Weird</div>
+			<div class="jeopardy-header">Tears & Feels</div>
+			<div class="jeopardy-header">Space & Sci-Fry</div>
+		</div>
+
+		<!-- Game Grid -->
+		<% for(let row=1; row <=5; row++) { %>
+			<div class="jeopardy-row">
+				<% for(let col=1; col <=5; col++) { %>
+					<div class="jeopardy-cell" data-id="r<%= row %>c<%= col %>">
+						<%= row * 100 %> <!-- CHANGE THIS LINE -->
+					</div>
+					<% } %>
+			</div>
+			<% } %>
+
+				<!-- Reset Button -->
+				<div class="jeopardy-reset">
+					<button onclick="resetBoard()">Reset Board</button>
+				</div>
+
+				<!-- Image Modal -->
+				<div id="imageModal">
+					<button onclick="closeModal()">Close</button>
+					<img id="modalImage" src="" alt="Revealed Image">
+				</div>
+	</div>
+
+	<!-- Game UI (mobile only) -->
+	<div class="game-container mobile-only">
 		<div class="header-card">
-			<div class="username-display">🎯 <%= username %>
+			<div class="username-display">🎮 <%= username %>
 			</div>
 			<div id="connectionStatus" class="connection-status reconnecting">
-				<span>🔄</span>
+				<span>🔌</span>
 				<span>Connecting to the fun center...</span>
 			</div>
 		</div>
 
-		<!-- Status Section -->
 		<div class="status-card">
 			<div id="status" class="game-status">Preparing for battle...</div>
 			<div id="playerList" class="player-list">Loading players...</div>
 		</div>
 
-		<!-- Buzzer Section -->
 		<div class="buzzer-card">
 			<div class="buzzer-container">
 				<button id="startBtn" class="start-btn">
-					<span>🎬 Start the Show</span>
+					<span>🚀 Start the Show</span>
 				</button>
-
 				<button id="tapBtn" class="buzz-button" disabled>
-					<span>🔴 BUZZ</span>
+					<span>🔔 BUZZ</span>
 				</button>
 			</div>
 		</div>
 
-		<!-- Actions Section -->
 		<div class="actions-card">
 			<div class="action-buttons">
-				<button class="action-btn" onclick="changeUsername()">
-					👤 Change Name
-				</button>
-				<button class="action-btn" onclick="refreshConnection()">
-					🔄 Refresh
-				</button>
+				<button class="action-btn" onclick="changeUsername()">📝 Change Name</button>
+				<button class="action-btn" onclick="refreshConnection()">🔄 Refresh</button>
 			</div>
 		</div>
 
-		<!-- Fun Footer -->
 		<div class="fun-footer">
 			<p>⚡ Quick on the buzz = bragging rights for life! ⚡</p>
 		</div>
 	</div>
 
 	<script>
+		const JEOPARDY_KEY = 'revealedJeopardyCells';
+		const revealedCells = JSON.parse(localStorage.getItem(JEOPARDY_KEY)) || {};
+
+		const imagePaths = [
+			'mission-impossible.webp', 'private-benjamin.webp', 'the-healing.webp', 'img_0_0.jpg', 'img_0_0.jpg', // Row 1
+			// --------------------------------------------------------------------------------------------
+			'kill-bill.jpg', 'home-alone.webp', 'evil-dead.webp', 'img_0_0.jpg', 'img_0_0.jpg',             // Row 2
+			// --------------------------------------------------------------------------------------------
+			'die_hard.jpg', 'shaun-of-the-dead.webp', 'midsommar.webp', 'img_0_0.jpg', 'img_0_0.jpg',       // Row 3
+			// --------------------------------------------------------------------------------------------
+			'tokyo_drift.jpg', 'zohan.webp', 'midnight-mass.webp', 'img_0_0.jpg', 'img_0_0.jpg',                   // Row 4
+			// --------------------------------------------------------------------------------------------
+			'speed.jpg', 'thousand-words.webp', 'cure-to-wellness.webp', 'img_0_0.jpg', 'img_0_0.jpg'       // Row 5
+		];
+
+
+		const cellImages = {};
+		imagePaths.forEach((filename, index) => {
+			const row = Math.floor(index / 5) + 1;
+			const col = (index % 5) + 1;
+			const cellId = `r${row}c${col}`;
+			cellImages[cellId] = filename;
+		});
+
+		function revealImage(cell, id) {
+			const img = document.createElement('img');
+			img.src = cellImages[id];
+			img.classList.add('jeopardy-img');
+			cell.innerHTML = '';
+			cell.appendChild(img);
+			cell.classList.add('revealed');
+			revealedCells[id] = true;
+			localStorage.setItem(JEOPARDY_KEY, JSON.stringify(revealedCells));
+		}
+
+		function showModal(id) {
+			const modal = document.getElementById('imageModal');
+			const modalImage = document.getElementById('modalImage');
+			modalImage.src = cellImages[id];
+			modal.style.display = 'flex';
+		}
+
+		function closeModal() {
+			const modal = document.getElementById('imageModal');
+			modal.style.display = 'none';
+		}
+
+		function resetBoard() {
+			localStorage.removeItem(JEOPARDY_KEY);
+			localStorage.removeItem(STORAGE_KEY);
+
+			document.querySelectorAll('.jeopardy-cell').forEach(cell => {
+				const value = cell.dataset.id.match(/\d$/)[0] + "00";
+				cell.innerHTML = value;
+				cell.classList.remove('revealed');
+			});
+
+			alert('Board and user data have been reset. Reload the page to enter a new username.');
+		}
+
+		// Setup cells
+		document.querySelectorAll('.jeopardy-cell').forEach(cell => {
+			const id = cell.dataset.id;
+			if (revealedCells[id]) {
+				revealImage(cell, id);
+			}
+			cell.addEventListener('click', () => {
+				if (!cell.classList.contains('revealed')) {
+					revealImage(cell, id);
+				}
+				showModal(id);
+			});
+		});
+
+		// Buzzer logic
 		const STORAGE_KEY = 'quiz_buzzer_username';
 		const username = "<%= username %>";
-
-		// Save current username to localStorage
 		localStorage.setItem(STORAGE_KEY, username);
 
 		const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
@@ -523,30 +188,29 @@
 			ws.onopen = () => {
 				reconnectAttempts = 0;
 				updateConnectionStatus('connected', '✅', 'Connected & Ready!');
-				status.innerText = "🎪 Ready to play!";
+				status.innerText = "✅ Ready to play!";
 			};
 
 			ws.onmessage = (event) => {
 				const data = JSON.parse(event.data);
-
 				switch (data.type) {
 					case 'gameState':
-						status.innerText = `🎭 Game state: ${data.state}`;
+						status.innerText = `🎬 Game state: ${data.state}`;
 						break;
 					case 'players':
 						playerList.innerText = `👥 Players: ${data.players.join(', ')}`;
 						break;
 					case 'gameStart':
-						status.innerText = `🚀 Get ready... Countdown: ${data.countdown}`;
+						status.innerText = `🚀 Countdown: ${data.countdown}`;
 						startBtn.disabled = true;
 						startBtn.classList.remove('pulse');
 						break;
 					case 'countdown':
-						status.innerText = `⏰ Starting in... ${data.count}`;
+						status.innerText = `⏳ Starting in... ${data.count}`;
 						status.classList.add('pulse');
 						break;
 					case 'gameActive':
-						status.innerText = `🟢 GO! BUZZ NOW!`;
+						status.innerText = `🔔 BUZZ NOW!`;
 						status.classList.remove('pulse');
 						tapBtn.disabled = false;
 						tapBtn.classList.add('pulse');
@@ -567,7 +231,7 @@
 						break;
 					case 'error':
 						if (data.message.includes('Username taken')) {
-							alert('⚠️ Username already taken! Please choose a different name.');
+							alert('❗ Username already taken! Please choose a different name.');
 							changeUsername();
 						} else {
 							alert(`Error: ${data.message}`);
@@ -580,11 +244,8 @@
 				updateConnectionStatus('disconnected', '❌', 'Disconnected');
 				status.innerText = "Connection lost...";
 				tapBtn.disabled = true;
-				tapBtn.classList.remove('pulse');
 				startBtn.disabled = true;
-				startBtn.classList.remove('pulse');
 
-				// Attempt to reconnect
 				if (reconnectAttempts < maxReconnectAttempts) {
 					reconnectAttempts++;
 					updateConnectionStatus('reconnecting', '🔄', `Reconnecting... (${reconnectAttempts}/${maxReconnectAttempts})`);
@@ -592,13 +253,13 @@
 						connect();
 					}, 2000 * reconnectAttempts);
 				} else {
-					updateConnectionStatus('disconnected', '💥', 'Connection failed. Please refresh!');
+					updateConnectionStatus('disconnected', '❌', 'Connection failed. Please refresh!');
 				}
 			};
 
 			ws.onerror = (error) => {
 				console.error('WebSocket error:', error);
-				updateConnectionStatus('disconnected', '⚠️', 'Connection error');
+				updateConnectionStatus('disconnected', '❌', 'Connection error');
 			};
 		}
 
@@ -624,11 +285,7 @@
 		tapBtn.addEventListener('click', () => {
 			if (ws && ws.readyState === WebSocket.OPEN) {
 				const timestamp = performance.now().toFixed(1);
-				ws.send(JSON.stringify({
-					type: 'tap',
-					username,
-					timestamp
-				}));
+				ws.send(JSON.stringify({type: 'tap', username, timestamp}));
 				tapBtn.disabled = true;
 				tapBtn.classList.remove('pulse');
 			}
@@ -642,24 +299,17 @@
 			}
 		});
 
-		// Handle page visibility changes
 		document.addEventListener('visibilitychange', () => {
 			if (!document.hidden && ws && ws.readyState !== WebSocket.OPEN) {
 				refreshConnection();
 			}
 		});
 
-		// Handle beforeunload
 		window.addEventListener('beforeunload', () => {
-			if (ws) {
-				ws.close();
-			}
+			if (ws) ws.close();
 		});
 
-		// Initial connection
 		connect();
-
-		// Add pulse to start button initially
 		startBtn.classList.add('pulse');
 	</script>
 </body>
