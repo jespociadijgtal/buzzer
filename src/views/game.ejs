@@ -87,6 +87,7 @@
 		</div>
 	</div>
 
+<audio id="buzzerSound" src="/buzzer.wav" preload="auto"></audio>
 	<script>
 		const JEOPARDY_KEY = 'revealedJeopardyCells';
 		const revealedCells = JSON.parse(localStorage.getItem(JEOPARDY_KEY)) || {};
@@ -324,14 +325,19 @@
 			window.location.href = '/';
 		}
 
-		tapBtn.addEventListener('click', () => {
-			if (ws && ws.readyState === WebSocket.OPEN) {
-				const timestamp = performance.now().toFixed(1);
-				ws.send(JSON.stringify({type: 'tap', username, timestamp}));
-				tapBtn.disabled = true;
-				tapBtn.classList.remove('pulse');
-			}
-		});
+const buzzerSound = document.getElementById('buzzerSound');
+
+tapBtn.addEventListener('click', () => {
+	if (ws && ws.readyState === WebSocket.OPEN) {
+		const timestamp = performance.now().toFixed(1);
+		ws.send(JSON.stringify({type: 'tap', username, timestamp}));
+		tapBtn.disabled = true;
+		tapBtn.classList.remove('pulse');
+		
+		buzzerSound.currentTime = 0; // rewind if playing
+		buzzerSound.play();
+	}
+});
 
 		if (startBtn) {
 			startBtn.addEventListener('click', () => {
