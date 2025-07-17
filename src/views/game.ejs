@@ -258,6 +258,8 @@
 						tapBtn.disabled = true;
 						tapBtn.classList.remove('pulse');
 						status.innerText = `🏆 ${data.winner} wins! (${data.timestamp}ms)`;
+
+						speakWinner(data.winner);
 						if (startBtn) {
 							startBtn.disabled = false;
 							startBtn.classList.add('pulse');
@@ -325,7 +327,47 @@
 			window.location.href = '/';
 		}
 
-const buzzerSound = document.getElementById('buzzerSound');
+		const victoryLines = [
+	"WHOA! {name} just SMASHED that buzzer!",
+	"{name} wins! That was faster than my morning coffee kicking in!",
+	"Give it up for {name}! Reflexes of a ninja!",
+	"BOOM! {name} snatched that win like a pro!",
+	"{name} buzzed in like lightning — someone check for superpowers!",
+	"{name}, you absolute legend! That was epic!",
+	"Are you serious? {name} wins again! This is getting suspicious...",
+	"{name} takes the win! Somebody stop this buzzer beast!",
+	"{name}, you're buzzin’ like it’s your full-time job!",
+	"{name} wins! Can we get them a trophy? Or at least a donut?"
+];
+
+
+function speakWinner(name) {
+	// Cancel anything speaking already
+	speechSynthesis.cancel();
+
+	// Pick a random funny line
+	const line = victoryLines[Math.floor(Math.random() * victoryLines.length)];
+	const text = line.replace('{name}', name);
+
+	// Create speech
+	const utterance = new SpeechSynthesisUtterance(text);
+	utterance.lang = 'en-US';
+	utterance.pitch = 1.5; // High energy
+	utterance.rate = 1.0;  // Natural speed
+	utterance.volume = 1.0;
+
+	// Optional: expressive voice selection
+	const voices = speechSynthesis.getVoices();
+	const funVoice = voices.find(v => v.name.includes("Google") || v.name.includes("Samantha") || v.lang === "en-US");
+	if (funVoice) utterance.voice = funVoice;
+
+	// Play buzzer first, then speak after
+	buzzerSound.currentTime = 0;
+	buzzerSound.play();
+	buzzerSound.onended = () => {
+		speechSynthesis.speak(utterance);
+	};
+}
 
 tapBtn.addEventListener('click', () => {
 	if (ws && ws.readyState === WebSocket.OPEN) {
@@ -333,9 +375,6 @@ tapBtn.addEventListener('click', () => {
 		ws.send(JSON.stringify({type: 'tap', username, timestamp}));
 		tapBtn.disabled = true;
 		tapBtn.classList.remove('pulse');
-		
-		buzzerSound.currentTime = 0; // rewind if playing
-		buzzerSound.play();
 	}
 });
 
